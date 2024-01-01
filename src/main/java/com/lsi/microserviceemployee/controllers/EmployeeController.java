@@ -7,14 +7,17 @@ import com.lsi.microserviceemployee.payload.response.MessageResponse;
 import com.lsi.microserviceemployee.repository.EmployeeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/employees")
+@RequestMapping("/api/employees")
 public class EmployeeController {
+    @Autowired
+    PasswordEncoder encoder;
     @Autowired
     public EmployeeRepository employeeRepository;
 
@@ -22,14 +25,17 @@ public class EmployeeController {
     public ResponseEntity<MessageResponse> addEmployee(@RequestBody AddEmployeeRequest addEmployeeRequest) {
         try {
             Employee employee = new Employee(
+                    null,
                     addEmployeeRequest.getL_name(),
                     addEmployeeRequest.getF_name(),
                     addEmployeeRequest.getUsername(),
+                    encoder.encode(addEmployeeRequest.getDate_of_birth().toString()),
                     addEmployeeRequest.getEmail(),
                     addEmployeeRequest.getPhone(),
                     addEmployeeRequest.getCity(),
                     addEmployeeRequest.getAddress(),
                     "EMPLOYEE",
+                    "",
                     addEmployeeRequest.getCin(),
                     addEmployeeRequest.getDate_of_birth()
             );

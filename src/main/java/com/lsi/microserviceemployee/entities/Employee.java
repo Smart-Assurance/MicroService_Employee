@@ -15,7 +15,7 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Document(collection = "users")
-@TypeAlias("EMPLOYEE")//distinguer
+@TypeAlias("EMPLOYEE")
 public class Employee extends User{
     @NotBlank
     @Size(max = 200)
@@ -35,20 +35,6 @@ public class Employee extends User{
         this.add_wallet_assu = add_wallet_assu;
         this.cin = cin;
         this.date_of_birth = date_of_birth;
-
-
-
-    }
-    public Employee( String l_name, String f_name, String username,
-                    String email, String phone, String city, String address, String role,
-                   String cin, Date date_of_birth) {
-
-        super(null, l_name, f_name, username, date_of_birth.toString(), email, phone, city, address, "EMPLOYEE");
-
-        this.cin = cin;
-        this.date_of_birth = date_of_birth;
-
-
 
     }
 

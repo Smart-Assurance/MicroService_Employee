@@ -39,4 +39,7 @@ public class AddEmployeeRequest {
     private String cin;
     @NotBlank
     private Date date_of_birth;
+    @NotBlank
+    private String add_wallet_assu;
+
 }

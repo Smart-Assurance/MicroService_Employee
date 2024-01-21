@@ -7,29 +7,42 @@ import com.lsi.microserviceemployee.payload.response.MessageResponse;
 import com.lsi.microserviceemployee.repository.EmployeeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+
 @RestController
-@RequestMapping("/employees")
+@RequestMapping("/api/employees")
 public class EmployeeController {
     @Autowired
     public EmployeeRepository employeeRepository;
 
+    @Autowired
+    public PasswordEncoder encoder;
+    public String encodeDate(Date date) {
+        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
+        return encoder.encode(sdf.format(date));
+    }
     @PostMapping("/add")
     public ResponseEntity<MessageResponse> addEmployee(@RequestBody AddEmployeeRequest addEmployeeRequest) {
         try {
             Employee employee = new Employee(
+                    null,
                     addEmployeeRequest.getL_name(),
                     addEmployeeRequest.getF_name(),
                     addEmployeeRequest.getUsername(),
                     addEmployeeRequest.getEmail(),
+                    encodeDate(addEmployeeRequest.getDate_of_birth()),
                     addEmployeeRequest.getPhone(),
                     addEmployeeRequest.getCity(),
                     addEmployeeRequest.getAddress(),
                     "EMPLOYEE",
+                    addEmployeeRequest.getAdd_wallet_assu(),
                     addEmployeeRequest.getCin(),
                     addEmployeeRequest.getDate_of_birth()
             );

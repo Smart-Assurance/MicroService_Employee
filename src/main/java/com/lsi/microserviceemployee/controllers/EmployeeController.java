@@ -8,6 +8,7 @@ import com.lsi.microserviceemployee.repository.EmployeeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.SimpleDateFormat;
@@ -18,7 +19,10 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/employees")
+@RequestMapping("/api/employees")
 public class EmployeeController {
+    @Autowired
+    PasswordEncoder encoder;
     @Autowired
     public EmployeeRepository employeeRepository;
 
@@ -33,9 +37,11 @@ public class EmployeeController {
         try {
             Employee employee = new Employee(
                     null,
+                    null,
                     addEmployeeRequest.getL_name(),
                     addEmployeeRequest.getF_name(),
                     addEmployeeRequest.getUsername(),
+                    encoder.encode(addEmployeeRequest.getDate_of_birth().toString()),
                     addEmployeeRequest.getEmail(),
                     encodeDate(addEmployeeRequest.getDate_of_birth()),
                     addEmployeeRequest.getPhone(),

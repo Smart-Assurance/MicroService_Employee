@@ -6,6 +6,7 @@ import com.lsi.microserviceemployee.payload.request.UpdateEmployeeRequest;
 import com.lsi.microserviceemployee.payload.response.MessageResponse;
 import com.lsi.microserviceemployee.repository.EmployeeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -19,31 +20,47 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/employees")
-@RequestMapping("/api/employees")
 public class EmployeeController {
     @Autowired
     PasswordEncoder encoder;
     @Autowired
     public EmployeeRepository employeeRepository;
 
-    @Autowired
-    public PasswordEncoder encoder;
+    private final AuthService authService;
+
+    public EmployeeController(EmployeeRepository employeeRepository, AuthService authService) {
+        this.employeeRepository = employeeRepository;
+        this.authService = authService;
+    }
+
     public String encodeDate(Date date) {
         SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
         return encoder.encode(sdf.format(date));
     }
+
+    private String extractTokenFromHeader(String authorizationHeader) {
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            return authorizationHeader.substring(7);
+        }
+        return null;
+    }
+
+
     @PostMapping("/add")
-    public ResponseEntity<MessageResponse> addEmployee(@RequestBody AddEmployeeRequest addEmployeeRequest) {
+    public ResponseEntity<MessageResponse> addEmployee(@RequestBody AddEmployeeRequest addEmployeeRequest,@RequestHeader("Authorization") String authorizationHeader) {
         try {
+            // Extract the token from the Authorization header
+            String token = extractTokenFromHeader(authorizationHeader);
+            if (!authService.isValidAdministratorToken(token)) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse(401, "Not authorized"));
+            }
             Employee employee = new Employee(
-                    null,
                     null,
                     addEmployeeRequest.getL_name(),
                     addEmployeeRequest.getF_name(),
                     addEmployeeRequest.getUsername(),
-                    encoder.encode(addEmployeeRequest.getDate_of_birth().toString()),
-                    addEmployeeRequest.getEmail(),
                     encodeDate(addEmployeeRequest.getDate_of_birth()),
+                    addEmployeeRequest.getEmail(),
                     addEmployeeRequest.getPhone(),
                     addEmployeeRequest.getCity(),
                     addEmployeeRequest.getAddress(),
@@ -62,8 +79,13 @@ public class EmployeeController {
         }
     }
     @GetMapping("/getAll")
-    public ResponseEntity<List<Employee>> getAllEmployees() {
+    public ResponseEntity<Object> getAllEmployees(@RequestHeader("Authorization") String authorizationHeader) {
         try {
+            // Extract the token from the Authorization header
+            String token = extractTokenFromHeader(authorizationHeader);
+            if (!authService.isValidAdministratorToken(token)) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse(401, "Not authorized"));
+            }
             List<Employee> employees = employeeRepository.findAll();
             return ResponseEntity.ok(employees);
         } catch (Exception e) {
@@ -73,8 +95,13 @@ public class EmployeeController {
 
 
     @GetMapping("/{employeeId}")
-    public ResponseEntity<Employee> getEmployeeById(@PathVariable String employeeId) {
+    public ResponseEntity<Object> getEmployeeById(@PathVariable String employeeId,@RequestHeader("Authorization") String authorizationHeader) {
         try {
+            // Extract the token from the Authorization header
+            String token = extractTokenFromHeader(authorizationHeader);
+            if (!authService.isValidAdministratorToken(token)) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse(401, "Not authorized"));
+            }
             Optional<Employee> employee = employeeRepository.findById(employeeId);
             if (employee.isPresent()) {
                 return ResponseEntity.ok(employee.get());
@@ -91,9 +118,15 @@ public class EmployeeController {
     @PutMapping("/{employeeId}")
     public ResponseEntity<MessageResponse> updateEmployee(
             @PathVariable String employeeId,
-            @RequestBody UpdateEmployeeRequest updatedEmployeeRequest
+            @RequestBody UpdateEmployeeRequest updatedEmployeeRequest,
+            @RequestHeader("Authorization") String authorizationHeader
     ) {
         try {
+            // Extract the token from the Authorization header
+            String token = extractTokenFromHeader(authorizationHeader);
+            if (!authService.isValidAdministratorToken(token)) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse(401, "Not authorized"));
+            }
             Optional<Employee> optionalEmployee = employeeRepository.findById(employeeId);
             if (optionalEmployee.isPresent()) {
                 Employee employee = optionalEmployee.get();
@@ -120,8 +153,13 @@ public class EmployeeController {
     }
 
     @DeleteMapping("/{employeeId}")
-    public ResponseEntity<MessageResponse> deleteEmployee(@PathVariable String employeeId) {
+    public ResponseEntity<MessageResponse> deleteEmployee(@PathVariable String employeeId,@RequestHeader("Authorization") String authorizationHeader) {
         try {
+            // Extract the token from the Authorization header
+            String token = extractTokenFromHeader(authorizationHeader);
+            if (!authService.isValidAdministratorToken(token)) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse(401, "Not authorized"));
+            }
             Optional<Employee> employee = employeeRepository.findById(employeeId);
             if (employee.isPresent()) {
                 employeeRepository.delete(employee.get());

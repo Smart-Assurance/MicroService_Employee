@@ -9,10 +9,10 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.LSI</groupId>
-    <artifactId>microservice-Employee</artifactId>
+    <artifactId>microservice-employee</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>microservice-Employee</name>
-    <description>microservice-Employee</description>
+    <name>microservice-employee</name>
+    <description>microservice-employee</description>
     <properties>
         <java.version>17</java.version>
         <spring-cloud.version>2023.0.0</spring-cloud.version>

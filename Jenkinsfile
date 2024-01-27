@@ -61,6 +61,7 @@ pipeline {
     stage('reload docker images') {
         steps {
             script {
+                
                 // Reconnect to SSH
                 sh "ssh -i ${JENKINS_SSH_KEY} -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} 'cd ${REMOTE_PATH}'"
 

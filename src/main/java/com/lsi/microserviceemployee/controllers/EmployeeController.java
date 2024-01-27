@@ -87,12 +87,19 @@ public class EmployeeController {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse(401, "Not authorized"));
             }
             List<Employee> employees = employeeRepository.findAll();
-            return ResponseEntity.ok(employees);
+            List<Employee> filteredEmployees = employees.stream()
+                    .filter(employee -> hasRole(employee, "ROLE_EMPLOYEE"))
+                    .collect(Collectors.toList());
+
+            return ResponseEntity.ok(filteredEmployees);
         } catch (Exception e) {
             return ResponseEntity.status(500).build(); // Erreur interne du serveur
         }
     }
 
+    private boolean hasRole(Employee employee, String role) {
+        return employee.getRole().equals(role);
+    }
 
     @GetMapping("/{employeeId}")
     public ResponseEntity<Object> getEmployeeById(@PathVariable String employeeId,@RequestHeader("Authorization") String authorizationHeader) {

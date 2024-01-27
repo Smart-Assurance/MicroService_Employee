@@ -87,6 +87,7 @@ public class EmployeeController {
             if (!authService.isValidAdministratorToken(token)) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse(401, "Not authorized"));
             }
+            
             List<Employee> employees = employeeRepository.findAll();
             List<Employee> filteredEmployees = employees.stream()
                     .filter(employee -> hasRole(employee, "ROLE_EMPLOYEE"))

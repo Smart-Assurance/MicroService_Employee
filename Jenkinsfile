@@ -50,6 +50,9 @@ pipeline {
         stage('Build and Copy JAR file into directory') {
             steps {
                 script {
+                    // pull last changes
+                    sh "git pull main"
+                    
                     // Build the app locally
                     sh "mvn clean install"
 
